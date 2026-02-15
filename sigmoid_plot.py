@@ -8,7 +8,6 @@ w = -2
 b = 3
 z = np.linspace(-10, 10, 1000)
 x = w*z + b
-
 y = sigmoid(x)
 plt.plot(x, y)
 plt.title('Sigmoid Function')
