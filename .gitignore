@@ -5,15 +5,28 @@ __pycache__/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
-# Virtual Environments
+# Virtual environments
 venv/
 env/
 .env/
+ae-lite-env/
 
-# IDE specific files
+# IDE
 .vscode/
 .idea/
 
-# OS generated files
+# OS
 .DS_Store
 Thumbs.db
+
+# AE-Lite: trained model weights — pushed via upload_to_github.py
+*.pt
+checkpoints/
+
+# AE-Lite: generated results — pushed via upload_to_github.py
+results/
+*.npy
+*.png
+
+# AE-Lite: convenience zip — never goes in git
+*.zip
