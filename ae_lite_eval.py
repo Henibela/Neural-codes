@@ -278,7 +278,7 @@ def plot_constellation(model: AELite, save_path: str = 'ae_lite_constellation_aw
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Evaluate AE-Lite BER')
-    parser.add_argument('--model',    default='ae_lite_final_awgn.pt',
+    parser.add_argument('--model',    default=os.path.join('checkpoints', 'local_cpu', 'ae_lite_final_awgn.pt'),
                         help='Path to trained model .pt file')
     parser.add_argument('--channel',  default='awgn',
                         choices=['awgn', 'rayleigh'],
@@ -293,6 +293,10 @@ if __name__ == '__main__':
     parser.add_argument('--constellation', action='store_true',
                         help='Also plot the learned constellation')
     args = parser.parse_args()
+
+    # --- Output directory ---
+    results_dir = os.path.join('results', 'local_cpu')
+    os.makedirs(results_dir, exist_ok=True)
 
     # --- Device ---
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -327,16 +331,16 @@ if __name__ == '__main__':
 
     # --- Plot ---
     plot_ber_comparison(snr_range, ber_awgn, ber_rayleigh,
-                        save_path=f'ae_lite_ber_comparison_{args.channel}.png')
+                        save_path=os.path.join(results_dir, f'ae_lite_ber_comparison_{args.channel}.png'))
 
     # --- Constellation ---
     if args.constellation:
         plot_constellation(model_awgn,
-                           save_path=f'ae_lite_constellation_{args.channel}.png')
+                           save_path=os.path.join(results_dir, f'ae_lite_constellation_{args.channel}.png'))
 
     # --- Save results as numpy ---
-    np.save('ber_ae_awgn.npy', ber_awgn)
-    np.save('snr_range.npy', snr_range)
+    np.save(os.path.join(results_dir, 'ber_ae_awgn.npy'),  ber_awgn)
+    np.save(os.path.join(results_dir, 'snr_range.npy'),     snr_range)
     if ber_rayleigh is not None:
-        np.save('ber_ae_rayleigh.npy', ber_rayleigh)
-    print("Raw BER arrays saved as .npy files.")
+        np.save(os.path.join(results_dir, 'ber_ae_rayleigh.npy'), ber_rayleigh)
+    print(f"Results saved to: {results_dir}/")

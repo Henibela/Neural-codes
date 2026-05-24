@@ -48,10 +48,14 @@ CONFIG = {
     'snr_max_db'   : 20.0,
 
     # --- Logging / saving ---
-    'log_every'        : 100,   # print loss every N epochs
-    'checkpoint_every' : 500,   # save .pt file every N epochs
-    'checkpoint_dir'   : 'checkpoints',
-    'final_model_path' : 'ae_lite_final_awgn.pt',  # updated by CLI to match channel
+    # All outputs go into subfolders — never mixed with source code.
+    # local runs → checkpoints/local_cpu/  and  results/local_cpu/
+    # Colab runs → managed by upload_to_github.py into colab_t4/ subfolders
+    'log_every'        : 100,
+    'checkpoint_every' : 500,
+    'checkpoint_dir'   : os.path.join('checkpoints', 'local_cpu'),
+    'results_dir'      : os.path.join('results',     'local_cpu'),
+    'final_model_path' : os.path.join('checkpoints', 'local_cpu', 'ae_lite_final_awgn.pt'),
 }
 
 
@@ -127,6 +131,7 @@ def train(cfg: dict):
 
     # --- Checkpoint directory ---
     os.makedirs(cfg['checkpoint_dir'], exist_ok=True)
+    os.makedirs(cfg['results_dir'],     exist_ok=True)
 
     # --- Training history (for plotting) ---
     history = {'epoch': [], 'loss': [], 'snr_db': []}
@@ -213,7 +218,7 @@ def _plot_loss(history: dict, cfg: dict):
     ax.legend(fontsize=10)
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
-    path = f'ae_lite_training_loss_{cfg["channel"]}.png'
+    path = os.path.join(cfg['results_dir'], f'ae_lite_training_loss_{cfg["channel"]}.png')
     plt.savefig(path, dpi=150)
     print(f"Loss curve saved: {path}")
     plt.show()
@@ -289,6 +294,6 @@ if __name__ == '__main__':
     CONFIG['lr']           = args.lr
     CONFIG['batch_size']   = args.batch
     CONFIG['snr_strategy'] = args.snr
-    CONFIG['final_model_path'] = f'ae_lite_final_{args.channel}.pt'
+    CONFIG['final_model_path'] = os.path.join('checkpoints', 'local_cpu', f'ae_lite_final_{args.channel}.pt')
 
     train(CONFIG)

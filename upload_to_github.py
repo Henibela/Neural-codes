@@ -32,16 +32,19 @@ CHECKPOINTS_DEST = 'checkpoints/colab_t4'
 # ═══════════════════════════════════════════════════════════════
 
 API_BASE = f'https://api.github.com/repos/{GITHUB_USERNAME}/{GITHUB_REPO}/contents'
-HEADERS  = {
-    'Authorization': f'token {GITHUB_PAT}',
-    'Accept':        'application/vnd.github.v3+json',
-    'Content-Type':  'application/json',
-}
+
+# HEADERS built inside functions only — avoids 'token None' if PAT not set yet
+def _headers():
+    return {
+        'Authorization': f'token {GITHUB_PAT}',
+        'Accept':        'application/vnd.github.v3+json',
+        'Content-Type':  'application/json',
+    }
 
 
 def github_request(method, url, data=None):
     body = json.dumps(data).encode() if data else None
-    req  = urllib.request.Request(url, data=body, headers=HEADERS, method=method)
+    req  = urllib.request.Request(url, data=body, headers=_headers(), method=method)
     try:
         with urllib.request.urlopen(req) as r:
             return json.loads(r.read()), r.status
@@ -77,41 +80,37 @@ def collect_files():
     files = []
     ts = datetime.now().strftime('%Y-%m-%d %H:%M')
 
-    # ── Results: .png plots and .npy arrays from DRIVE_BASE root ─
-    for fname in os.listdir(DRIVE_BASE):
-        fpath = os.path.join(DRIVE_BASE, fname)
-        if not os.path.isfile(fpath):
-            continue
-        if fname.endswith('.png') or fname.endswith('.npy'):
-            files.append((
-                fpath,
-                f'{RESULTS_DEST}/{fname}',
-                f'colab_t4 results: {fname} [{ts}]'
-            ))
+    # Source subfolders on Drive — match exactly what ae_lite_colab.py writes
+    results_src  = os.path.join(DRIVE_BASE, 'results',     'colab_t4')
+    ckpt_src     = os.path.join(DRIVE_BASE, 'checkpoints', 'colab_t4')
 
-    # ── Checkpoints: final .pt models in DRIVE_BASE root ─────────
-    for fname in os.listdir(DRIVE_BASE):
-        fpath = os.path.join(DRIVE_BASE, fname)
-        if not os.path.isfile(fpath):
-            continue
-        if fname.endswith('.pt'):
-            files.append((
-                fpath,
-                f'{CHECKPOINTS_DEST}/{fname}',
-                f'colab_t4 model: {fname} [{ts}]'
-            ))
+    # ── Results: .png plots and .npy arrays ───────────────────────
+    if os.path.isdir(results_src):
+        for fname in sorted(os.listdir(results_src)):
+            fpath = os.path.join(results_src, fname)
+            if os.path.isfile(fpath) and (fname.endswith('.png') or fname.endswith('.npy')):
+                files.append((
+                    fpath,
+                    f'{RESULTS_DEST}/{fname}',
+                    f'colab_t4 results: {fname} [{ts}]'
+                ))
+    else:
+        print(f'  ! Results folder not found: {results_src}')
+        print(  '    Run Cell 4 + Cell 5 first to generate results.')
 
-    # ── Checkpoints: intermediate .pt files in checkpoints/ ──────
-    ckpt_dir = os.path.join(DRIVE_BASE, 'checkpoints')
-    if os.path.isdir(ckpt_dir):
-        for fname in sorted(os.listdir(ckpt_dir)):
-            fpath = os.path.join(ckpt_dir, fname)
+    # ── Checkpoints: all .pt files ────────────────────────────────
+    if os.path.isdir(ckpt_src):
+        for fname in sorted(os.listdir(ckpt_src)):
+            fpath = os.path.join(ckpt_src, fname)
             if os.path.isfile(fpath) and fname.endswith('.pt'):
                 files.append((
                     fpath,
                     f'{CHECKPOINTS_DEST}/{fname}',
                     f'colab_t4 checkpoint: {fname} [{ts}]'
                 ))
+    else:
+        print(f'  ! Checkpoints folder not found: {ckpt_src}')
+        print(  '    Run Cell 3 (training) first.')
 
     return files
 
