@@ -3,7 +3,7 @@
 > BSc Thesis · School of Electrical and Computer Engineering · Addis Ababa University  
 > **Author:** Henok Belayneh &nbsp;|&nbsp; **Advisor:** Dr. Tsegamlak Terefe &nbsp;|&nbsp; **Year:** 2025–2026
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/15CNNgKw3e4Rrq_EuDNFw_b9P-HDo-66D#scrollTo=CQISb5Ve7n9d)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/YOUR_NOTEBOOK_ID_HERE)
 ![Python](https://img.shields.io/badge/Python-3.10-blue)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
