@@ -89,25 +89,6 @@ ae_lite/
 
 ---
 
-## Results
-
-### BER vs Eb/N0 — AWGN Channel
-
-![BER AWGN](results/ae_lite_ber_comparison_awgn.png)
-
-### BER vs Eb/N0 — Rayleigh Fading Channel
-
-![BER Rayleigh](results/ae_lite_ber_comparison_rayleigh.png)
-
-### Learned Constellation
-
-![Constellation](results/ae_lite_constellation_awgn.png)
-
-> At R = 0.5, AE-Lite matches BPSK/QPSK within ±0.5 dB — consistent with theory.  
-> The learned constellation shows the encoder discovers its own modulation geometry without any hand-design.
-
----
-
 ## Quickstart
 
 ### Option A — Google Colab (recommended)
